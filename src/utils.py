@@ -39,9 +39,7 @@ class Analyzer:
         self._trues = None
 
     def _retrieve_predictions(self):
-        loader = DataLoader(
-            self.dataset, batch_size=32, shuffle=False, drop_last=False
-        )
+        loader = DataLoader(self.dataset, batch_size=32, shuffle=False, drop_last=False)
 
         trues = []
         preds = []
@@ -73,16 +71,14 @@ class Analyzer:
             mean_preds = self._preds.mean(dim=-1)
         else:
             mean_preds = self._preds
-        where_mistakes = mean_preds.argmax(dim=-1) != self._trues.argmax(
-            dim=-1
-        )
+        where_mistakes = mean_preds.argmax(dim=-1) != self._trues.argmax(dim=-1)
         preds_with_mistakes = mean_preds[where_mistakes]
         images = self._images[where_mistakes]
         trues = self._trues[where_mistakes]
 
-        top_high_confidence_indices = self._get_entropy(
-            preds_with_mistakes
-        ).argsort(descending=False)[:k]
+        top_high_confidence_indices = self._get_entropy(preds_with_mistakes).argsort(
+            descending=False
+        )[:k]
         return (
             images[top_high_confidence_indices],
             self._preds[where_mistakes][top_high_confidence_indices],
@@ -96,16 +92,14 @@ class Analyzer:
             mean_preds = self._preds.mean(dim=-1)
         else:
             mean_preds = self._preds
-        where_mistakes = mean_preds.argmax(dim=-1) != self._trues.argmax(
-            dim=-1
-        )
+        where_mistakes = mean_preds.argmax(dim=-1) != self._trues.argmax(dim=-1)
         preds_with_mistakes = mean_preds[where_mistakes]
         images = self._images[where_mistakes]
         trues = self._trues[where_mistakes]
 
-        top_low_confidence_indices = self._get_entropy(
-            preds_with_mistakes
-        ).argsort(descending=True)[:k]
+        top_low_confidence_indices = self._get_entropy(preds_with_mistakes).argsort(
+            descending=True
+        )[:k]
         return (
             images[top_low_confidence_indices],
             self._preds[where_mistakes][top_low_confidence_indices],
@@ -124,18 +118,16 @@ class Analyzer:
         images = self._images[where_correct]
         trues = self._trues[where_correct]
 
-        top_high_confidence_indices = self._get_entropy(
-            preds_with_mistakes
-        ).argsort(descending=False)[:k]
+        top_high_confidence_indices = self._get_entropy(preds_with_mistakes).argsort(
+            descending=False
+        )[:k]
         return (
             images[top_high_confidence_indices],
             self._preds[where_correct][top_high_confidence_indices],
             trues[top_high_confidence_indices],
         )
 
-    def get_top_k_low_confidence_correct(
-        self, k: int = 10
-    ) -> Tuple[torch.Tensor, ...]:
+    def get_top_k_low_confidence_correct(self, k: int = 10) -> Tuple[torch.Tensor, ...]:
         if len(self._preds.shape) == 3:
             mean_preds = self._preds.mean(dim=-1)
         else:
@@ -145,9 +137,9 @@ class Analyzer:
         images = self._images[where_correct]
         trues = self._trues[where_correct]
 
-        top_low_confidence_indices = self._get_entropy(
-            preds_with_mistakes
-        ).argsort(descending=True)[:k]
+        top_low_confidence_indices = self._get_entropy(preds_with_mistakes).argsort(
+            descending=True
+        )[:k]
         return (
             images[top_low_confidence_indices],
             self._preds[where_correct][top_low_confidence_indices],
@@ -265,9 +257,7 @@ def fit_elbo(
 
             y_predictions = y_predictions.mean(dim=-1)
             accuracy = (
-                (y_predictions.argmax(dim=1) == targets.argmax(dim=1))
-                .float()
-                .mean()
+                (y_predictions.argmax(dim=1) == targets.argmax(dim=1)).float().mean()
             )
 
             train_metrics["loss"].append(loss.item())
@@ -301,9 +291,7 @@ def fit_elbo(
         preds = torch.cat(preds, dim=0)
         trues = torch.cat(trues, dim=0)
 
-        val_acc = (
-            (preds.argmax(dim=1) == trues.argmax(dim=1)).float().mean().item()
-        )
+        val_acc = (preds.argmax(dim=1) == trues.argmax(dim=1)).float().mean().item()
 
         test_metrics["loss"].append(total_loss / total_batches)
         test_metrics["acc"].append(val_acc)
@@ -321,7 +309,7 @@ class IntegerToOneHotConverter:
 
 
 def load_mnist_datasets(
-    limit_train_samples_to: int = 10_000
+    limit_train_samples_to: int = 10_000,
 ) -> Tuple[Dataset, Dataset]:
     train_dataset = MNIST(
         "data",  # folder where data should be saved
@@ -338,9 +326,7 @@ def load_mnist_datasets(
     )
 
     # limiting for faster training
-    indices = np.random.permutation(len(train_dataset.data))[
-        :limit_train_samples_to
-    ]
+    indices = np.random.permutation(len(train_dataset.data))[:limit_train_samples_to]
     train_dataset.data = train_dataset.data[indices]
     train_dataset.targets = train_dataset.targets[indices]
     return train_dataset, test_dataset
