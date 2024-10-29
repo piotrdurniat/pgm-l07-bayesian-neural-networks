@@ -114,3 +114,4 @@ modules.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,vscode,jupyternotebooks
 venv/
+data/MNIST/
